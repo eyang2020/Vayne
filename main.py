@@ -13,7 +13,8 @@ COG_FOLDER = os.path.join(THIS_FOLDER, 'cogs')
 cdDict = {
     'help': [],
     'lookup': [],
-    'language': []
+    'language': [],
+    'skill': []
 }
 
 # Commands
