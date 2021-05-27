@@ -43,8 +43,9 @@ class ChampSelect(commands.Cog):
             summoners.append(Summoner(username))
         summonerCnt = len(summoners)
 
-        # op.gg returns data based on usernames (alphabetical order) HOL UP DOES IT THO?
-        summoners.sort(key=lambda x: x.username.casefold())
+        # op.gg returns data based on usernames (alphabetical order)
+        # sort ignoring whitespace
+        summoners.sort(key=lambda x: x.username.replace(' ', '').casefold())
     
         # form the opgg multiquery url
         # https://na.op.gg/multi/query=AtomicAngel22%2CMuffintopper66%2Cthigh%20gap%20gg%2CWukumi%2CTheGamingFiles
