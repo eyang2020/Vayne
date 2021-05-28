@@ -21,7 +21,7 @@ class Champion(commands.Cog):
     # Commands
     @commands.command(aliases=['s'])
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def skill(self, ctx, *, query=None)
+    async def skill(self, ctx, *, query=None):
         user = ctx.message.author
         if query:
             try:
@@ -64,7 +64,7 @@ class Champion(commands.Cog):
                 print(f'Error: {e}')
                 await ctx.send(f'{user.mention}, I could not find a recommended skill build for this champion.')    
         else:
-            await ctx.send(f'{user.mention}, please specify a champion using **vskill [champion] [role]**.')
+            await ctx.send(f'{user.mention}, please specify a champion using **vskill [champion] | [role]**.')
         
 def setup(client):
     client.add_cog(Champion(client))
