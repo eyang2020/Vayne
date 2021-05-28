@@ -76,7 +76,10 @@ class Champion(commands.Cog):
                 championDisplayName = query[0].strip().title()
                 championSearchName = ''.join(championDisplayName.split())
                 role = None
-
+                # special case for jarvan iv
+                if championDisplayName == 'Jarvan Iv':
+                    championDisplayName = 'Jarvan IV'
+                    championSearchName = 'JarvanIV'
                 if len(query) > 1:
                     role = query[1].strip().capitalize()
                 if role:
