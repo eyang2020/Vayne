@@ -21,25 +21,32 @@ class Champion(commands.Cog):
     # Commands
     @commands.command(aliases=['s'])
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def skill(self, ctx, champion=None, role=None): # todo: handle spaces. ex: miss fortune (w/wo role)
+    async def skill(self, ctx, *, query=None): # todo: handle spaces. ex: miss fortune (w/wo role)
         user = ctx.message.author
-        if champion:
+        if query:
             try:
-                champion = champion.lower().capitalize()
+                #query = ''.join(query.split())
+                query = query.lower().split('|')
+                championDisplayName = query[0].strip().title()
+                championSearchName = ''.join(championDisplayName.split())
+                role = None
+                # special case for jarvan iv
+                if championDisplayName == 'Jarvan Iv':
+                    championDisplayName = 'Jarvan IV'
+                    championSearchName = 'JarvanIV'
+                if len(query) > 1:
+                    role = query[1].strip().capitalize()
                 if role:
-                    role = role.lower().capitalize()
-                    res = await self.session.get(f'https://na.op.gg/champion/{champion}/statistics/{role}')
+                    res = await self.session.get(f'https://na.op.gg/champion/{championSearchName}/statistics/{role}')
                 else:
-                    res = await self.session.get(f'https://na.op.gg/champion/{champion}/statistics/')
+                    res = await self.session.get(f'https://na.op.gg/champion/{championSearchName}/statistics/')
                 # get role used in url (opgg will 'default' it if role is invalid)
                 role = res.url.split('/')[-1].lower().capitalize()
-                # todo: fix img for miss fortune
                 table = res.html.find('.champion-skill-build__table')[0]
-                img = f'https://opgg-static.akamaized.net/images/lol/champion/{champion}.png'
+                img = f'https://opgg-static.akamaized.net/images/lol/champion/{championSearchName}.png'
                 skills = table.text.split('\n')[15:]
-        
                 embed = discord.Embed(
-                    title=f'Recommended Skill Order for `{champion}` `{role}`',
+                    title=f'Recommended Skill Order for `{championDisplayName}` `{role}`',
                     color=self.color
                 )
                 embed.set_thumbnail(url=img)
@@ -55,7 +62,7 @@ class Champion(commands.Cog):
                 await ctx.send(embed=embed)
             except Exception as e:
                 print(f'Error: {e}')
-                await ctx.send(f'{user.mention}, please enter a valid champion name.')    
+                await ctx.send(f'{user.mention}, I could not find a recommended skill build for this champion.')    
         else:
             await ctx.send(f'{user.mention}, please specify a champion using **vskill [champion] [role]**.')
         
