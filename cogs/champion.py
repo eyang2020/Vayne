@@ -64,7 +64,51 @@ class Champion(commands.Cog):
                 print(f'Error: {e}')
                 await ctx.send(f'{user.mention}, I could not find a recommended skill build for this champion.')    
         else:
-            await ctx.send(f'{user.mention}, please specify a champion using **vskill [champion] | [role]**.')
-        
+            await ctx.send(f'{user.mention}, please specify a champion using **vskill [champion] | (role)**.')
+    
+    @commands.command(aliases=['r'])
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def rune(self, ctx, *, query=None):
+        user = ctx.message.author
+        if query:
+            try:
+                query = query.lower().split('|')
+                championDisplayName = query[0].strip().title()
+                championSearchName = ''.join(championDisplayName.split())
+                role = None
+
+                if len(query) > 1:
+                    role = query[1].strip().capitalize()
+                if role:
+                    res = await self.session.get(f'https://na.op.gg/champion/{championSearchName}/statistics/{role}/rune')
+                else:
+                    res = await self.session.get(f'https://na.op.gg/champion/{championSearchName}/statistics/x/rune')
+
+                role = res.url.split('/')[-2].lower().capitalize()
+                img = f'https://opgg-static.akamaized.net/images/lol/champion/{championSearchName}.png'
+
+                tables = res.html.find('.perk-page')
+                tableMain = tables[0]
+                tableSecondary = tables[1]
+                runesMain = tableMain.find('img')[0]
+                runesSecondary = tableSecondary.find('img')[0]
+                pathMain = runesMain.attrs['title']
+                print(pathMain)
+                pathSecondary = runesSecondary.attrs['title']
+                print(pathSecondary)
+
+                embed = discord.Embed(
+                    title=f'Recommended Runes for `{championDisplayName}` `{role}`',
+                    color=self.color
+                )
+                embed.set_thumbnail(url=img)
+                embed.timestamp = datetime.utcnow()
+                await ctx.send(embed=embed)
+            except Exception as e:
+                print(f'Error: {e}')
+                await ctx.send(f'{user.mention}, I could not find the recommended runes for this champion.')    
+        else:
+            await ctx.send(f'{user.mention}, please specify a champion using **vrune [champion] | (role)**.')
+
 def setup(client):
     client.add_cog(Champion(client))
