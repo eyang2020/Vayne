@@ -21,7 +21,7 @@ class Champion(commands.Cog):
     # Commands
     @commands.command(aliases=['s'])
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def skill(self, ctx, *, query=None): # todo: handle spaces. ex: miss fortune (w/wo role)
+    async def skill(self, ctx, *, query=None)
         user = ctx.message.author
         if query:
             try:
