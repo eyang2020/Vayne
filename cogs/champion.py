@@ -14,21 +14,21 @@ class Champion(commands.Cog):
         'Domination' : '<:Rune_Domination:850205315173449760>',
 
         # Sorcery
-        'Summon Aery' : '',
-        'Arcane Comet' : '',
-        'Phase Rush' : '',
+        'Summon Aery' : '<:Rune_Summon_Aery:850512359642103838>',
+        'Arcane Comet' : '<:Rune_Arcane_Comet:850512356784996423>',
+        'Phase Rush' : '<:Rune_Phase_Rush:850512359403683890>',
 
-        'Nullifying Orb' : '',
-        'Manaflow Band' : '',
-        'Nimbus Cloak' : '',
+        'Nullifying Orb' : '<:Rune_Nullifying_Orb:850512359185186888>',
+        'Manaflow Band' : '<:Rune_Manaflow_Band:850512359331201114>',
+        'Nimbus Cloak' : '<:Rune_Nimbus_Cloak:850512358995918878>',
 
-        'Transcendence' : '',
-        'Celerity' : '',
-        'Absolute Focus' : '',
+        'Transcendence' : '<:Rune_Transcendence:850512359519682560>',
+        'Celerity' : '<:Rune_Celerity:850512359339589703>',
+        'Absolute Focus' : '<:Rune_Absolute_Focus:850512356588650506>',
 
-        'Scorch' : '',
-        'Waterwalking' : '',
-        'Gathering Storm' : '',
+        'Scorch' : '<:Rune_Scorch:850512359080722443>',
+        'Waterwalking' : '<:Rune_Waterwalking:850512359571062784>',
+        'Gathering Storm' : '<:Rune_Gathering_Storm:850512359062896671>',
 
         # Resolve
         'Grasp of the Undying' : '<:Rune_Grasp_of_the_Undying:850216988394389545>',
@@ -65,19 +65,22 @@ class Champion(commands.Cog):
         'Cut Down' : '<:Rune_Cut_Down:850206473791602728>',
         'Last Stand' : '<:Rune_Last_Stand:850206474172104704>',
 
-        # Glacial Augment
-        'Glacial Augment' : '',
-        'Unsealed Spellbook' : '',
-        'Prototype: Omnistone' : '',
-        'Hextech Flashtraption' : '',
-        'Magical Footwear' : '',
-        'Perfect Timing' : '',
-        'Future\'s Market' : '',
-        'Minion Dematerializer' : '',
-        'Biscuit Delivery' : '',
-        'Cosmic Insight' : '',
-        'Approach Velocity' : '',
-        'Time Warp Tonic' : '',
+        # Inspiration
+        'Glacial Augment' : '<:Rune_Glacial_Augment:850514015783878686>',
+        'Unsealed Spellbook' : '<:Rune_Unsealed_Spellbook:850514017796882462>',
+        'Prototype: Omnistone' : '<:Rune_Prototype__Omnistone:850514017722171412>',
+
+        'Hextech Flashtraption' : '<:Rune_Hextech_Flashtraption:850514432194379787>',
+        'Magical Footwear' : '<:Rune_Magical_Footwear:850514017641431040>',
+        'Perfect Timing' : '<:Rune_Perfect_Timing:850514432094240769>',
+
+        'Future\'s Market' : '<:Rune_Future27s_Market:850514015309922335>',
+        'Minion Dematerializer' : '<:Rune_Minion_Dematerializer:850514017591885825>',
+        'Biscuit Delivery' : '<:Rune_Biscuit_Delivery:850514870637690911>',
+
+        'Cosmic Insight' : '<:Rune_Cosmic_Insight:850514015667224639>',
+        'Approach Velocity' : '<:Rune_Approach_Velocity:850514015481495592>',
+        'Time Warp Tonic' : '<:Rune_Time_Warp_Tonic:850514017684553799>',
 
         # Domination
         'Electrocute' : '<:Rune_Electrocute:850214141969170452>',
@@ -99,9 +102,12 @@ class Champion(commands.Cog):
         'Ultimate Hunter' : '<:Rune_Ultimate_Hunter:850214143809945621>',
 
         # Fragment
-        '' : '',
-        '' : '',
-        '' : ''
+        '+9 Adaptive Force' : '<:Fragment_Adaptive_Force:850517181996859402>',
+        '+10% Attack Speed' : '<:Fragment_Attack_Speed:850517181883219988>',
+        '+8 Ability Haste' : '<:Fragment_Ability_Haste:850517181820436490>',
+        '+6 Armor' : '<:Fragment_Armor:850517181392879667>',
+        '+8 Magic Resist' : '<:Fragment_Magic_Resist:850517182014292019>',
+        '+15-90 Health (based on level)' : '<:Fragment_Health:850517181837869107>'
     }
 
     def __init__(self, client):
@@ -201,6 +207,7 @@ class Champion(commands.Cog):
 
                 runeMainStr = ''
                 runeSecondaryStr = ''
+                fragmentMainStr = ''
                 for rune in subtableMain:
                     if not 'grayscale' in rune.attrs['src']:
                         runeMainStr += self.runeDict[rune.attrs['title'][26:].split('</b>')[0]] + ' '
@@ -212,8 +219,7 @@ class Champion(commands.Cog):
                 #print(fragmentMain)
                 for rune in fragmentMain:
                     if not 'grayscale' in rune.attrs['src']:
-                        print(rune.attrs['title'].split('<span>')[1].split('</span>')[0])
-                        
+                        fragmentMainStr += self.runeDict[rune.attrs['title'].split('<span>')[1].split('</span>')[0]] + ' '
 
                 embed = discord.Embed(
                     title=f'Recommended Runes for `{championDisplayName}` `{role}`',
@@ -221,7 +227,7 @@ class Champion(commands.Cog):
                 )
                 embed.add_field(name='Primary', value=runeMainStr, inline=False)
                 embed.add_field(name='Secondary', value=runeSecondaryStr, inline=False)
-                embed.add_field(name='Attributes', value='Bottom Text', inline=False)
+                embed.add_field(name='Attributes', value=fragmentMainStr, inline=False)
                 embed.set_thumbnail(url=img)
                 embed.timestamp = datetime.utcnow()
                 await ctx.send(embed=embed)
