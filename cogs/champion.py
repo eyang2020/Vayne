@@ -221,7 +221,7 @@ class Champion(commands.Cog):
                 )
                 embed.add_field(name='Primary', value=runeMainStr, inline=False)
                 embed.add_field(name='Secondary', value=runeSecondaryStr, inline=False)
-                
+                embed.add_field(name='Attributes', value='Bottom Text', inline=False)
                 embed.set_thumbnail(url=img)
                 embed.timestamp = datetime.utcnow()
                 await ctx.send(embed=embed)
