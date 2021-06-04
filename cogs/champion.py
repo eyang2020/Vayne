@@ -93,12 +93,25 @@ class Champion(commands.Cog):
                 tables = res.html.find('.perk-page')
                 tableMain = tables[0]
                 tableSecondary = tables[1]
-                runesMain = tableMain.find('img')[0]
-                runesSecondary = tableSecondary.find('img')[0]
-                pathMain = runesMain.attrs['title']
-                print(pathMain)
-                pathSecondary = runesSecondary.attrs['title']
-                print(pathSecondary)
+                subtableMain = tableMain.find('img')
+                subtableSecondary = tableSecondary.find('img')
+                # fragment page (stat-runes)
+                fragmentTable = res.html.find('.fragment-page')[0]
+                fragmentMain = fragmentTable.find('img')
+
+                for rune in subtableMain:
+                    if not 'grayscale' in rune.attrs['src']:
+                        print(rune.attrs['title'][26:].split('</b>')[0])
+
+                for rune in subtableSecondary:
+                    if not 'grayscale' in rune.attrs['src']:
+                        print(rune.attrs['title'][26:].split('</b>')[0])
+
+                #print(fragmentMain)
+                for rune in fragmentMain:
+                    if not 'grayscale' in rune.attrs['src']:
+                        print(rune.attrs['title'].split('<span>')[1].split('</span>')[0])
+                        
 
                 embed = discord.Embed(
                     title=f'Recommended Runes for `{championDisplayName}` `{role}`',
