@@ -14,7 +14,9 @@ cdDict = {
     'help': [],
     'lookup': [],
     'language': [],
-    'skill': []
+    'skill': [],
+    'rune': [],
+    'sale': []
 }
 
 # Commands
