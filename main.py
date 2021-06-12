@@ -6,7 +6,9 @@ from datetime import datetime
 from discord.ext import commands
 
 TOKEN = os.environ['DISCORD_TOKEN']
-client = commands.Bot(command_prefix=['v'], help_command=None, case_insensitive=True)
+intents = discord.Intents.default()
+intents.members = True
+client = commands.Bot(command_prefix=['v'], intents=intents, help_command=None, case_insensitive=True)
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 COG_FOLDER = os.path.join(THIS_FOLDER, 'cogs')
 
@@ -16,7 +18,11 @@ cdDict = {
     'language': [],
     'skill': [],
     'rune': [],
-    'sale': []
+    'sale': [],
+    'wishlist': [],
+    'wishlistadd': [],
+    'wishlistremove': [],
+    'rotation': []
 }
 
 # Commands
