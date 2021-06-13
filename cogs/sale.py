@@ -141,14 +141,19 @@ class Sale(commands.Cog):
         # todo: add support for case when doc is None
         doc = collectionUserToSkin.find_one({'userId': userId})
         skins = doc['skins']
+        wishlistSize = len(skins)
 
         skinStr = '```ml\n'
         for skin in skins:
-            skinStr += f'{skin}\n'
+            if skin in self.saleCache:
+                skinStr += f'{skin} (ON SALE)\n'
+            else:
+                skinStr += f'{skin}\n'
         skinStr += '```'
 
         embed.add_field(name='Wishlisted Skins', value=skinStr, inline=False)
         embed.set_author(name=user.name, icon_url=user.avatar_url)
+        embed.set_footer(text=f'{10 - wishlistSize}/10 slots available')
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
@@ -174,6 +179,13 @@ class Sale(commands.Cog):
         # check if skin is already on wishlist
         doc = collectionUserToSkin.find_one({'userId': userId})
         skins = doc['skins']
+        wishlistSize = len(skins)
+
+        # check wishlist size
+        if wishlistSize >= 10:
+            await ctx.send(f'{user.mention}, your wishlist is full.')
+            return
+
         if skinDisplayName in skins:
             await ctx.send(f'{user.mention}, this skin is already on your wishlist.')
             return
