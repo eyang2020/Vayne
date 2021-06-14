@@ -21,6 +21,17 @@ class Help(commands.Cog):
             color=self.color
         )
         await ctx.send(embed=embed)
+    
+    '''
+    # Temp Commands for Development (comment when unused)
+    @commands.command()
+    async def servers(self, ctx):
+        activeservers = self.client.guilds
+        for guild in activeservers:
+            await ctx.send(guild.name)
+            for emote in guild.emojis:
+                print(f"'{emote.name}' : '<:{emote.name}:{emote.id}>',")
+    '''
 
 def setup(client):
     client.add_cog(Help(client))
