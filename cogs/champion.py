@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from datetime import datetime
 from requests_html import AsyncHTMLSession
 from main import runeDict
 
@@ -59,7 +58,6 @@ class Champion(commands.Cog):
                 skillStr += ' '.join(f'`{skill} `' for skill in skills)
 
                 embed.add_field(name='Skill Order', value=skillStr, inline=False)
-                embed.timestamp = datetime.utcnow()
                 await ctx.send(embed=embed)
             except Exception as e:
                 print(f'Error: {e}')
@@ -124,7 +122,6 @@ class Champion(commands.Cog):
                 embed.add_field(name='Secondary', value=runeSecondaryStr, inline=False)
                 embed.add_field(name='Attributes', value=fragmentMainStr, inline=False)
                 embed.set_thumbnail(url=img)
-                embed.timestamp = datetime.utcnow()
                 await ctx.send(embed=embed)
             except Exception as e:
                 print(f'Error: {e}')
