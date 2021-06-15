@@ -39,7 +39,6 @@ class ChampRotation(commands.Cog):
         )
         embed.add_field(name='Duration', value=durationStr, inline=False)
         embed.add_field(name='Champions', value=championStr, inline=False)
-        embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
 def setup(client):
