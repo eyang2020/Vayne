@@ -20,8 +20,8 @@ cdDict = {
     'rune': [],
     'sale': [],
     'wishlist': [],
-    'wishlistadd': [],
-    'wishlistremove': [],
+    'wishadd': [],
+    'wishremove': [],
     'rotation': []
 }
 
