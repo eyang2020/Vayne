@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands, tasks
 from datetime import datetime
 from requests_html import AsyncHTMLSession
+from main import champDict
 
 MONGODB_AUTH = os.environ['MONGODB_AUTH']
 cluster = pymongo.MongoClient(MONGODB_AUTH)
@@ -15,7 +16,7 @@ collectionSaleInfo = db['SaleInfo']
 
 class Sale(commands.Cog):
 
-    # saleCache: cache for current sale. format: {itemName: (fullPrice, discountPrice)}
+    # saleCache: cache for current sale. format: {itemName: (fullPrice, discountPrice, champName)}
     # durationCache: current sale duration
     saleCache = {}
     durationCache = ''
@@ -57,14 +58,15 @@ class Sale(commands.Cog):
             banners = table.find('.centered-grid-icon')
             for banner in banners:
                 info = banner.text.split('\n')
-                self.saleCache[info[0]] = (info[1], info[2])
+                champName = banner.find('.skin_portrait')[0].attrs['data-champion']
+                self.saleCache[info[0]] = (info[1], info[2], champName)
             self.durationCache = curDuration
             # if there is a new sale: update db and send a round of dm's to notify wishlist
             if newSale: 
                 # update db
                 collectionSaleInfo.update_one({'saleInfo': 'saleInfo'}, {'$set': {'duration': curDuration}}, upsert=True)
                 # for each skin, dm the users who have it wishlisted
-                for itemName, priceTuple in self.saleCache.items():
+                for itemName, infoTuple in self.saleCache.items():
                     docSkinToUser = collectionSkinToUser.find_one({'skin': itemName})
                     if not docSkinToUser:
                         # if no doc was found, this was a champion on sale
@@ -76,7 +78,7 @@ class Sale(commands.Cog):
                     embed = discord.Embed(
                         color=self.color
                     )
-                    formattedStr = f'```ml\n{itemName} {priceTuple[0]} → {priceTuple[1]}```\n'
+                    formattedStr = f'```ml\n{itemName} {infoTuple[0]} → {infoTuple[1]}```\n'
                     embed.add_field(name='A skin you wishlisted is on sale!', value=formattedStr, inline=False)
                     for userId in userIds:
                         user = self.client.get_user(userId)
@@ -101,31 +103,48 @@ class Sale(commands.Cog):
             banners = table.find('.centered-grid-icon')
             for banner in banners:
                 info = banner.text.split('\n')
-                self.saleCache[info[0]] = (info[1], info[2])
+                champName = banner.find('.skin_portrait')[0].attrs['data-champion']
+                self.saleCache[info[0]] = (info[1], info[2], champName)
         # create embed
         durationStr = '```'
-        championSaleStr = '```ml\n'
-        skinSaleStr = '```ml\n'
+
+        championNameStr = ''
+        championFullPriceStr = ''
+        championSalePriceStr = ''
+    
+        skinNameStr = ''
+        skinFullPriceStr = ''
+        skinSalePriceStr = ''
+
         counter = 0
         # sale format: 5 champions first, then 15 skins
-        for itemName, priceTuple in self.saleCache.items():
-            formattedStr = f'{itemName:<30} {priceTuple[0]:>4} → {priceTuple[1]:>4}\n'
-            if counter < 5: championSaleStr += formattedStr
-            else: skinSaleStr += formattedStr
+        for itemName, infoTuple in self.saleCache.items():
+            if counter < 5: 
+                championNameStr += f'{champDict[itemName]} **{itemName}**\n'
+                championFullPriceStr += f'~~{infoTuple[0]}~~\n'
+                championSalePriceStr += f'**{infoTuple[1]}**\n'
+            else:
+                skinNameStr += f'{champDict[infoTuple[2]]} **{itemName}**\n'
+                skinFullPriceStr += f'~~{infoTuple[0]}~~\n'
+                skinSalePriceStr += f'**{infoTuple[1]}**\n'
             counter += 1
         durationStr += self.durationCache
 
         durationStr += '```'
-        championSaleStr += '```'
-        skinSaleStr += '```'
 
         embed = discord.Embed(
             title='Current Sale',
             color=self.color
         )
         embed.add_field(name='Duration', value=durationStr, inline=False)
-        embed.add_field(name='Champions', value=championSaleStr, inline=False)
-        embed.add_field(name='Skins', value=skinSaleStr, inline=False)
+        embed.add_field(name='Champions', value=championNameStr, inline=True)
+        embed.add_field(name='\u2800', value=championFullPriceStr, inline=True)
+        embed.add_field(name='\u2800', value=championSalePriceStr, inline=True)
+        
+        embed.add_field(name='Skins', value=skinNameStr, inline=True)
+        embed.add_field(name='\u2800', value=skinFullPriceStr, inline=True)
+        embed.add_field(name='\u2800', value=skinSalePriceStr, inline=True)
+        
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
