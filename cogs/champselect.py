@@ -1,7 +1,6 @@
 import os
 import discord
 from discord.ext import commands
-from datetime import datetime
 from requests_html import AsyncHTMLSession
 
 RIOT_API_KEY = os.environ['RIOT_API_KEY']
@@ -79,7 +78,6 @@ class ChampSelect(commands.Cog):
         embed.add_field(name='👤 Summoner', value=teamStr, inline=True)
         embed.add_field(name='🏆 Rank', value=rankStr, inline=True)
         embed.add_field(name='🏅 Winrate', value=winrateStr, inline=True)
-        embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
 def setup(client):
