@@ -29,7 +29,7 @@ class ChampRotation(commands.Cog):
 
         champions = res.html.find('.free_champion_rotation')[0].text.split('\n')
         for champion in champions:
-            championStr += f'{champDict[champion]}`{champion}`\n'
+            championStr += f'{champDict[champion]} **{champion}**\n'
 
         durationStr += '```'
 
