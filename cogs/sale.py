@@ -145,7 +145,6 @@ class Sale(commands.Cog):
         embed.add_field(name='\u2800', value=skinFullPriceStr, inline=True)
         embed.add_field(name='\u2800', value=skinSalePriceStr, inline=True)
         
-        embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['wl'])
@@ -162,18 +161,16 @@ class Sale(commands.Cog):
         skins = doc['skins']
         wishlistSize = len(skins)
 
-        skinStr = '```ml\n'
+        skinStr = ''
         for skin in skins:
             if skin in self.saleCache:
-                skinStr += f'{skin} (ON SALE)\n'
+                skinStr += f'**{skin} (ON SALE)**\n'
             else:
                 skinStr += f'{skin}\n'
-        skinStr += '```'
 
         embed.add_field(name='Wishlisted Skins', value=skinStr, inline=False)
         embed.set_author(name=user.name, icon_url=user.avatar_url)
         embed.set_footer(text=f'{10 - wishlistSize}/10 slots available')
-        embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['wa'])
@@ -217,12 +214,11 @@ class Sale(commands.Cog):
         img = res.html.find('.detailed-product-left')[0].find('img')[0].attrs['src']
 
         embed = discord.Embed(
-            description=f'`{skinDisplayName}`\nhas been added to your wishlist.',
+            description=f'**{skinDisplayName}**\nhas been added to your wishlist.',
             color=self.color
         )
         embed.set_author(name=user.name, icon_url=user.avatar_url)
         embed.set_image(url=img)
-        embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['wr'])
@@ -241,7 +237,7 @@ class Sale(commands.Cog):
         if skinDisplayName in skins:
             collectionUserToSkin.update_one({'userId': userId}, {'$pull': {'skins': skinDisplayName}})
             collectionSkinToUser.update_one({'skin': skinDisplayName}, {'$pull': {'userId': userId}})
-            await ctx.send(f'{user.mention}, `{skinDisplayName}` has been removed from your wishlist.')
+            await ctx.send(f'{user.mention}, **{skinDisplayName}** has been removed from your wishlist.')
         else:
             await ctx.send(f'{user.mention}, this skin is not on your wishlist.')
 
