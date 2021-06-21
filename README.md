@@ -8,11 +8,15 @@ Vayne is a multi-purpose League of Legends Discord bot.
 * Lookup the highest win rate runes and skill order for a particular champion.
 
 ## Usage
+
+* Multi-summoner Lookup: `vlu`\
+![vlu](https://i.imgur.com/OjSi9I5.png)
+
+* Weekly Free Champion Rotation: `vcr`\
+![vcr](https://i.imgur.com/F2jBO92.png)
+
 * Weekly Sale: `vsale`\
 ![vsale](https://i.imgur.com/koeB1D8.png)
-
-* Weekly Free Champion Rotation: `vrotation`\
-![vrotation](https://i.imgur.com/F2jBO92.png)
 
 ## Development Roadmap
 * Language / Region support. Currently, only `LANG=English` and `REGION=NA` are supported.
