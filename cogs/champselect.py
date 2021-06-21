@@ -12,6 +12,7 @@ class Summoner:
         self.winrate = ''
         self.wonCnt = ''
         self.lossCnt = ''
+        self.mostPlayedPosition = ''
 
 class ChampSelect(commands.Cog):
     def __init__(self, client):
@@ -37,7 +38,10 @@ class ChampSelect(commands.Cog):
         lines = info.split('\n')
         for line in lines:
             #username = line[:line.index('加入了队伍聊天')]
-            username = line[:line.index('joined the lobby')]
+            try:
+                username = line[:line.index('joined the lobby')]
+            except:
+                username = line
             usernames.append(username)
             summoners.append(Summoner(username))
         summonerCnt = len(summoners)
@@ -57,28 +61,28 @@ class ChampSelect(commands.Cog):
             winrate = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.graph > div > span')[0]
             gamesPlayed = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.graph > div > div')[0]
             gamesPlayed = gamesPlayed.text.split('\n')
+            position = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.tier-position > div.most-position > i')[0].attrs['class'][1].split('most-position__icon--')[1]
+            cleanUsername = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.summoner-name > a')[0].text
+
             summoners[i-1].rank = rank.text
             summoners[i-1].winrate = winrate.text
             summoners[i-1].wonCnt = gamesPlayed[0]
             summoners[i-1].lossCnt = gamesPlayed[1]
+            summoners[i-1].mostPlayedPosition = position
+            summoners[i-1].username = cleanUsername
 
         embed = discord.Embed(
-            title='Champion Select Overview',
+            title='Summoner Lookup',
             color=self.color
         )
 
-        teamStr = ''
-        rankStr = ''
-        winrateStr = ''
         for summoner in summoners:
-            teamStr += '`{}`\n'.format(summoner.username)
-            rankStr += '`{}`\n'.format(summoner.rank)
-            winrateStr += '`{}` `{}` `{}`\n'.format(summoner.winrate, summoner.wonCnt, summoner.lossCnt)
-
-        embed.add_field(name='👤 Summoner', value=teamStr, inline=True)
-        embed.add_field(name='🏆 Rank', value=rankStr, inline=True)
-        embed.add_field(name='🏅 Winrate', value=winrateStr, inline=True)
+            summaryStr = f'{summoner.rank}\n{summoner.winrate} ({summoner.wonCnt} | {summoner.lossCnt})\n{summoner.mostPlayedPosition}'
+            embed.add_field(name=summoner.username, value=summaryStr, inline=False)
+        
         await ctx.send(embed=embed)
 
 def setup(client):
     client.add_cog(ChampSelect(client))
+
+# todo: add error messages (could not find user) and individual vs multi-search
