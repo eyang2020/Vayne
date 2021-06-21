@@ -18,6 +18,13 @@ Vayne is a multi-purpose League of Legends Discord bot.
 * Language / Region support. Currently, only `LANG=English` and `REGION=NA` are supported.
 * `merch` command. Find out what's on sale at the LoL merch store!
 
+## Tools
+* discord.py
+* [OP.GG](https://na.op.gg/)
+* [LOLSKINSHOP](https://lolskinshop.com/)
+* [League of Legends Wiki](https://leagueoflegends.fandom.com)
+
+**Not affiliated with any of the websites used. These websites are only used as tools for this bot.*
 
 ## Contributing
 Contributions are welcomed and encouraged!
