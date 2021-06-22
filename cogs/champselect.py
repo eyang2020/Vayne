@@ -14,6 +14,7 @@ class Summoner:
         self.wonCnt = ''
         self.lossCnt = ''
         self.mostPlayedPosition = ''
+        self.mainChampion = ''
 
 class ChampSelect(commands.Cog):
     def __init__(self, client):
@@ -79,8 +80,10 @@ class ChampSelect(commands.Cog):
 
                 personalKDA = champion.find('.PersonalKDA')[0].text.split('\n')
                 avg = personalKDA[0]
+                '''
+                # currently not used, but it splits average KDA into (k/D/A)
                 components = personalKDA[1]
-
+                '''
                 playStats = champion.find('.Played')[0].text.split('\n')
                 winrate = playStats[0]
                 gamesPlayed = playStats[1]
@@ -119,6 +122,15 @@ class ChampSelect(commands.Cog):
                 gamesPlayed = gamesPlayed.text.split('\n')
                 position = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.tier-position > div.most-position > i')[0].attrs['class'][1].split('most-position__icon--')[1]
                 cleanUsername = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.summoner-name > a')[0].text
+                champions = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.most-champions-wrapper > ul.most-champions')[0].find('.most-champions__stats')
+
+                '''
+                for champion in champions:
+                    print(champion.find('.champion')[0].attrs['title'])
+                '''
+
+                # todo: handle case when champ pool is empty
+                mainChampion = champions[0].find('.champion')[0].attrs['title']
 
                 summoners[i-1].rank = rank.text
                 summoners[i-1].winrate = winrate.text
@@ -126,6 +138,7 @@ class ChampSelect(commands.Cog):
                 summoners[i-1].lossCnt = gamesPlayed[1]
                 summoners[i-1].mostPlayedPosition = position
                 summoners[i-1].username = cleanUsername
+                summoners[i-1].mainChampion = mainChampion
 
             embed = discord.Embed(
                 title='Summoner Lookup',
@@ -134,7 +147,7 @@ class ChampSelect(commands.Cog):
 
             for summoner in summoners:
                 summaryStr = f'{summoner.rank}\n{summoner.winrate} ({summoner.wonCnt} | {summoner.lossCnt})\n{summoner.mostPlayedPosition}'
-                embed.add_field(name=summoner.username, value=summaryStr, inline=False)
+                embed.add_field(name=f'{champDict[summoner.mainChampion]} {summoner.username}', value=summaryStr, inline=False)
             
             await ctx.send(embed=embed)
 
