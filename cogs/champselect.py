@@ -15,6 +15,7 @@ class Summoner:
         self.lossCnt = ''
         self.mostPlayedPosition = ''
         self.mainChampion = ''
+        self.recentlyPlayed = None
 
 class ChampSelect(commands.Cog):
     def __init__(self, client):
@@ -45,7 +46,7 @@ class ChampSelect(commands.Cog):
                 username = line[:line.index('joined the lobby')]
             except:
                 username = line
-            # single-summoner loopup
+            # single-summoner lookup
 
             queryUrl = f'https://na.op.gg/summoner/userName={username}'
             res = await self.session.get(queryUrl)
@@ -62,7 +63,11 @@ class ChampSelect(commands.Cog):
             winratio = winLossInfo.find('.winratio')[0].text.split()[-1]
             championPool = res.html.xpath('//*[@id="SummonerLayoutContent"]/div[2]/div[1]/div[3]/div[2]/div[1]/div')[0].find('.ChampionBox')
 
-            summaryStr = f'Summoner · **{cleanUsername}**\n{rankType} · **{rankTier}** ({LP})\nWin Ratio · **{winratio}** ({wins} | {losses})'
+            summaryStr = f'''
+                Summoner · **{cleanUsername}**
+                {rankType} · **{rankTier}** ({LP})
+                Win Ratio · **{winratio}** ({wins} | {losses})
+            '''
 
             embed = discord.Embed(
                 title='Summoner Lookup',
@@ -123,7 +128,8 @@ class ChampSelect(commands.Cog):
                 position = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.tier-position > div.most-position > i')[0].attrs['class'][1].split('most-position__icon--')[1]
                 cleanUsername = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.summoner-summary > div.summoner-name > a')[0].text
                 champions = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.most-champions-wrapper > ul.most-champions')[0].find('.most-champions__stats')
-
+                recentGames = res.html.find(f'body > div.l-wrap.l-wrap--multi > div.l-container > div.MultiSearchLayoutWrap > div > div.ContentWrap > div > div > ul > li:nth-child({i}) > div.recent-matches > ul')[0].find('.recent-games__item')[0:2]
+                
                 '''
                 for champion in champions:
                     print(champion.find('.champion')[0].attrs['title'])
@@ -140,13 +146,28 @@ class ChampSelect(commands.Cog):
                 summoners[i-1].username = cleanUsername
                 summoners[i-1].mainChampion = mainChampion
 
+                recentChampions = []
+                for game in recentGames:
+                    champion = game.find('.champion')[0].attrs['title']
+                    if not champion in recentChampions:
+                        recentChampions.append(champion)
+                summoners[i-1].recentlyPlayed = recentChampions
+
             embed = discord.Embed(
                 title='Summoner Lookup',
                 color=self.color
             )
 
             for summoner in summoners:
-                summaryStr = f'{summoner.rank}\n{summoner.winrate} ({summoner.wonCnt} | {summoner.lossCnt})\n{summoner.mostPlayedPosition}'
+                recentlyPlayedStr = ''
+                for champion in summoner.recentlyPlayed:
+                    recentlyPlayedStr += f'{champDict[champion]} '
+                summaryStr = f'''
+                    Solo/Duo Rank · **{summoner.rank}**
+                    Win Ratio · **{summoner.winrate} ({summoner.wonCnt} | {summoner.lossCnt})**
+                    Pref. Role · **{summoner.mostPlayedPosition}**
+                    Recently Played · {recentlyPlayedStr}
+                '''
                 embed.add_field(name=f'{champDict[summoner.mainChampion]} {summoner.username}', value=summaryStr, inline=False)
             
             await ctx.send(embed=embed)
