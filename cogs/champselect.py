@@ -52,21 +52,31 @@ class ChampSelect(commands.Cog):
             res = await self.session.get(queryUrl)
             profileIconUrl = 'https:' + res.html.find('body > div.l-wrap.l-wrap--summoner > div.l-container > div > div > div.Header > div.Face > div > img')[0].attrs['src']
             cleanUsername = res.html.find('body > div.l-wrap.l-wrap--summoner > div.l-container > div > div > div.Header > div.Profile > div.Information > span')[0].text
-            rankInfo = res.html.find('#SummonerLayoutContent > div.tabItem.Content.SummonerLayoutContent.summonerLayout-summary > div.SideContent > div.TierBox.Box > div > div.TierRankInfo')[0]
-            rankType = rankInfo.find('.RankType')[0].text
-            rankTier = rankInfo.find('.TierRank')[0].text
-            tierInfo = rankInfo.find('.TierInfo')[0]
-            LP = tierInfo.find('.LeaguePoints')[0].text
-            winLossInfo = tierInfo.find('.WinLose')[0]
-            wins = winLossInfo.find('.wins')[0].text
-            losses = winLossInfo.find('.losses')[0].text
-            winratio = winLossInfo.find('.winratio')[0].text.split()[-1]
+            soloRankInfo = res.html.find('#SummonerLayoutContent > div.tabItem.Content.SummonerLayoutContent.summonerLayout-summary > div.SideContent > div.TierBox.Box > div > div.TierRankInfo')[0]
+            soloRankTier = soloRankInfo.find('.TierRank')[0].text
+            soloTierInfo = soloRankInfo.find('.TierInfo')[0]
+            soloRankLP = soloTierInfo.find('.LeaguePoints')[0].text
+            soloWinLossInfo = soloTierInfo.find('.WinLose')[0]
+            soloWins = soloWinLossInfo.find('.wins')[0].text
+            soloLosses = soloWinLossInfo.find('.losses')[0].text
+            soloWinRatio = soloWinLossInfo.find('.winratio')[0].text.split()[-1]
+
+            flexRankInfo = res.html.find('#SummonerLayoutContent > div.tabItem.Content.SummonerLayoutContent.summonerLayout-summary > div.SideContent > div.sub-tier')[0]
+            flexRankTier = flexRankInfo.find('.sub-tier__rank-tier')[0].text
+            flexSummaryStr = '**Unranked**\n'
+            if flexRankTier != 'Unranked':
+                flexRankLPGameInfo = flexRankInfo.find('.sub-tier__league-point')[0].text.split('/ ')
+                flexRankLP = flexRankLPGameInfo[0]
+                flexRankGameInfo = flexRankLPGameInfo[1]
+                flexWinRatio = flexRankInfo.find('.sub-tier__gray-text')[1].text.split()[-1]
+                flexSummaryStr = f'**{flexRankTier}** ({flexRankLP}) · **{flexWinRatio}** ({flexRankGameInfo})'
+
             championPool = res.html.xpath('//*[@id="SummonerLayoutContent"]/div[2]/div[1]/div[3]/div[2]/div[1]/div')[0].find('.ChampionBox')
 
             summaryStr = f'''
                 Summoner · **{cleanUsername}**
-                {rankType} · **{rankTier}** ({LP})
-                Win Ratio · **{winratio}** ({wins} | {losses})
+                Ranked Solo · **{soloRankTier}** ({soloRankLP}) · **{soloWinRatio}** ({soloWins} {soloLosses})
+                Ranked Flex · {flexSummaryStr}
             '''
 
             embed = discord.Embed(
@@ -164,7 +174,7 @@ class ChampSelect(commands.Cog):
                     recentlyPlayedStr += f'{champDict[champion]} '
                 summaryStr = f'''
                     Solo/Duo Rank · **{summoner.rank}**
-                    Win Ratio · **{summoner.winrate} ({summoner.wonCnt} | {summoner.lossCnt})**
+                    Win Ratio · **{summoner.winrate} ({summoner.wonCnt} {summoner.lossCnt})**
                     Pref. Role · **{summoner.mostPlayedPosition}**
                     Recently Played · {recentlyPlayedStr}
                 '''
