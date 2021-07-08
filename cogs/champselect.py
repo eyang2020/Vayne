@@ -71,7 +71,7 @@ class ChampSelect(commands.Cog):
                 flexWinRatio = flexRankInfo.find('.sub-tier__gray-text')[1].text.split()[-1]
                 flexSummaryStr = f'**{flexRankTier}** ({flexRankLP}) · **{flexWinRatio}** ({flexRankGameInfo})'
 
-            championPool = res.html.xpath('//*[@id="SummonerLayoutContent"]/div[2]/div[1]/div[3]/div[2]/div[1]/div')[0].find('.ChampionBox')
+            championPool = res.html.xpath('//*[@id="SummonerLayoutContent"]/div[2]/div[1]/div[3]/div[2]/div[1]/div')[0].find('.ChampionBox')[0:3]
 
             summaryStr = f'''
                 Summoner · **{cleanUsername}**
@@ -106,6 +106,19 @@ class ChampSelect(commands.Cog):
                 championPoolStr += f'{champDict[name]} `{winrate}` `{gamesPlayed}` `{avg}` `{creepScore}`\n'
             
             embed.add_field(name='Most Played Champions', value=championPoolStr, inline=False)
+            
+            matchHistory = res.html.xpath('//*[@id="SummonerLayoutContent"]/div[2]/div[2]/div/div[2]/div[3]')[0].find('.GameItemWrap')[0:3]
+            matchHistoryStr = ''
+            for match in matchHistory:
+                champion = match.find('.ChampionName')[0].text
+                kda = match.find('.KDA')[0].text.split('\n')[0].replace(' ', '')
+                result = match.find('.GameResult')[0].text
+                timeStamp = match.find('.TimeStamp')[0].text
+                if result == 'Victory': result = '✅'
+                else: result = '❌'
+                matchHistoryStr += f'{result} {champDict[champion]} `{kda}` `{timeStamp}`\n'
+
+            embed.add_field(name='Match History', value=matchHistoryStr, inline=False)
             
             await ctx.send(embed=embed)
 
