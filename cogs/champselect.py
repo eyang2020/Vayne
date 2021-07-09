@@ -120,6 +120,9 @@ class ChampSelect(commands.Cog):
 
             embed.add_field(name='Match History', value=matchHistoryStr, inline=False)
             
+            linkStr = f'[OP.GG](https://na.op.gg/summoner/userName={cleanUsername}) · [U.GG](https://u.gg/lol/profile/na1/{cleanUsername}/overview)'
+            embed.add_field(name='\u2800', value=linkStr, inline=False)
+
             await ctx.send(embed=embed)
 
         else:
