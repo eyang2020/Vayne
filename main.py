@@ -1,7 +1,6 @@
 import os
 import asyncio
 import discord
-import keep_alive
 from datetime import datetime
 from discord.ext import commands
 
