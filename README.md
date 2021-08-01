@@ -38,6 +38,3 @@ Vayne is a multi-purpose League of Legends Discord bot.
 
 ## Contributing
 Contributions are welcomed and encouraged!
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
